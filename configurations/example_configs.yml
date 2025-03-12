@@ -1,0 +1,110 @@
+# unet
+input_channels: 1
+depth_unet: 3
+hidden_channels: [48, 96, 192, 384]
+
+# swin_unetr
+input_patch_size: [2, 2, 2]
+unetr_res_block: none
+unetr_up_block: swin
+basic_block_res: true
+
+# attention
+num_heads_encoder: 4
+num_heads_decoder: 4
+attn_window_size: [8, 8, 4]
+pos_bias_embed_dim: 64
+use_checkpoint: true
+attn_drop: 0.1
+proj_drop: 0.1
+
+# prompt tokens
+max_prompts: 1  # always set to 1 here.
+tokens_per_prompt_encoder: 64
+tokens_per_prompt_decoder: 64
+lr_prompt_tokens: 5e-4
+weight_decay_prompt_tokens: 0.1
+
+# data dirs
+image_dir_pretrain: none  # to be defined.
+mask_dir_pretrain: none  # to be defined.
+image_dir_supervised: none  # to be defined.
+mask_dir_supervised: none  # to be defined.
+image_dir_downstream: none  # to be defined.
+mask_dir_downstream: none  # to be defined.
+image_dir_test: none  # to be defined.
+mask_dir_test: none  # to be defined.
+
+# data transforms and augmentations
+image_dict_key: image
+mask_dict_key: mask
+coord_dict_key: coord
+random_transforms: true
+random_orientation: false
+orientation: axial
+resize_content: false
+resize_spatial_size: [256, 256, 256]
+roi_size: [128, 128, 8]
+crop_size_students:
+  - [96, 96, 8]
+  - [80, 80, 8]
+seg_input_size: [128, 128, 8]
+
+# data loader
+split_ratio: 0.8
+gpu: 1
+num_workers: 2
+pin_memory: true
+num_selected_data_pretrain: -1
+num_selected_data_supervised: -1
+num_selected_data_downstream: -1
+
+# multi-view trainer
+masking_shape: [2, 2, 2]
+masking_ratio: 0.2
+contrastive_coding_dim: 512
+use_reconstruction: true
+weight_rec: 0.2
+use_rotation_prediction: true
+weight_rot: 0.5
+use_contrastive_learning: true
+weight_con: 0.3
+use_mutual_learning: false
+max_epochs_multi_view: 400
+lr_multi_view: 5e-4
+weight_decay_multi_view: 0.1
+num_samples_multi_view: 7
+batch_size_multi_view: 2
+warmup_steps_multi_view: 100
+t_total_multi_view: 4000
+
+# students-teacher trainer
+tau: 0.99
+max_epochs_students_teacher: 400
+lr_students_teacher: 5e-4
+weight_decay_students_teacher: 0.1
+reduction_factor: 4
+fwhm: 128
+k_means_iterations: 3
+use_prototype_assignment: true
+use_real_label: true
+num_samples_students_teacher: 4
+batch_size_students_teacher: 2
+output_channels_pretrain: 5
+active_labels_pretrain: [0, 1, 2, 3, 5]
+warmup_steps_students_teacher: 100
+t_total_students_teacher: 2400
+
+# segmentation
+include_background: true
+lr_downstream: 1e-3
+weight_decay_downstream: 0
+max_epochs_downstream: 300
+num_samples_downstream: 8
+batch_size_downstream: 2
+output_channels_downstream: 2
+active_labels_downstream: [0, 5]
+max_epochs_test: 10
+
+# view outputs
+view: false  # Be careful when setting this. This will creat a lot of images in the file system.
